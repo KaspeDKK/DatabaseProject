@@ -1,0 +1,16 @@
+INSERT Address VALUES
+('Roskildevej','12','Haderslev',6070,'1308981817'),
+('Hovedvej','4A','Roskilde',4000,'1212824762'),
+('Faglaertvej','67','Herlev',2730,'3108789976'),
+('Landevej','419','Slagelse',4270,'0101014321'),
+('Uhyggeligvej','7B','Herning',6933,'1212988825'),
+('Funktionelletbanevej','9980C','Aarhus',8000,'2307127139'),
+('Funktionelletbanevej','9980C','Aarhus',8000,'1203112231'),
+('Havvej','21','Skagen',9990,'1606047842'),
+('Nyvej','420','Ishoej',2625,'1104671111'),
+('Strandvej','152','Rungsted',2960,'0102037755'),
+('Bagsværdvej','99','Bagsvaerd',2800,'1309092385'),
+('Ballerupvej','31D','ballerup',2740,'1010828850'),
+('Kongensvej','1','Kokkedal',2970,'0710299836'),
+('Denrigtigevej','12345','Helsinge',3200,'1111111111'),
+('Denforkertevej','54321','Koebenhavn S',2300,'2212978765');
