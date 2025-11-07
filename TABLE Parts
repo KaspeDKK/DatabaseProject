@@ -1,0 +1,21 @@
+CREATE TABLE Parts
+  (
+    SerialNumber       VARCHAR(20) PRIMARY KEY,              # SerialNumber: Globally unique identifier for each part. Primary Key implies NOT NULL automatically.
+                                                             
+    ManufacturerID     INT NOT NULL,                         # ManufacturerID: Foreign key to Manufacturer table. NOT NULL ensures total participation, each part must belong to one manufacturer.
+
+    Code               VARCHAR(20) NOT NULL,                 # Code: Manufacturer-specific part code (fx. "BRK-102"). is Required for identification in catalogs. NOT NULL ensures every part has a code.
+                                                             
+    Description        VARCHAR(100),                         # Description: Optional human-readable info about the part. Nullable because some manufacturers may omit it.
+                                                             
+    Unit_Price         DECIMAL(8,2) CHECK (Unit_Price >= 0), # Unit_Price: Decimal value for the cost of one part.
+                                                             # CHECK constraint ensures non negative prices.
+                                                             # Nullable because prototypes or new parts may lack a price.
+    
+    FOREIGN KEY (ManufacturerID) REFERENCES Manufacturer(ManufacturerID)  # Foreign key linking parts to their manufacturer.
+        ON UPDATE CASCADE                                                # ON UPDATE CASCADE: if ManufacturerID changes, all parts follow.
+        ON DELETE RESTRICT,                                              # ON DELETE RESTRICT: prevents deleting a manufacturer that still has parts.
+
+    UNIQUE (ManufacturerID, Code)                                        # UNIQUE: prevents a manufacturer from reusing the same part code,
+                                                                         # but allows different manufacturers to use identical codes.
+  );
