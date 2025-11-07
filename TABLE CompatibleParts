@@ -1,0 +1,19 @@
+CREATE TABLE CompatibleParts
+  (
+    PartSN   VARCHAR(20),                           # PartSN: Foreign key referencing a part (SerialNumber), each row links one partt to one compatible bike.
+                                                             
+
+    BikeSN   VARCHAR(20),                           # BikeSN: Foreign key referencing a bike (SerialNumber), Each row indicates that a specific bike can use a specific part.
+                                                             
+
+    PRIMARY KEY (PartSN, BikeSN),                   # Composite Primary Key: Ensures each (Part, Bike) pair is unique.
+                                                    # Prevents duplicate compatibility entries.
+
+    FOREIGN KEY (PartSN) REFERENCES Parts(SerialNumber)       # Foreign key linking to Parts table.
+        ON UPDATE CASCADE                                    # ON UPDATE CASCADE: if a part's SerialNumber changes, the link updates automatically.
+        ON DELETE CASCADE,                                   # ON DELETE CASCADE: if a part is deleted, all its compatibility links are deleted.
+
+    FOREIGN KEY (BikeSN) REFERENCES Bikes(SerialNumber)       # Foreign key linking to Bikes table.
+        ON UPDATE CASCADE                                    # ON UPDATE CASCADE: if a bike's SerialNumber changes, the link updates automatically.
+        ON DELETE CASCADE                                    # ON DELETE CASCADE: if a bike is deleted, all its compatibility records are removed.
+);
