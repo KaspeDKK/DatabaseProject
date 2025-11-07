@@ -1,0 +1,10 @@
+CREATE TABLE Address
+  (
+  street_name   VARCHAR(64), # 64 max length is chosen to both cover the average street name length as well as outliers that might be longer
+  civic_number  INT,         # refers to the specific house number
+  city          VARCHAR(64), # 64 max length due to some cases of cities having very long names
+  ZIP_code      VARCHAR(12), # 12 max length, ZIP code is represented by a varchar instead of an int due to large countries like Canada and the UK using a mix of numbers and letters
+  CPR           VARCHAR(10), # Foreign key
+  PRIMARY KEY(CPR),
+  FOREIGN KEY(CPR) REFERENCES Customer(CPR) ON DELETE CASCADE
+  );
