@@ -1,0 +1,16 @@
+INSERT Customer VALUES
+('1308981817','John@gmail.com','22334455','John','Name'),
+('1212824762','sadjwokj7sdwushd@gmail.com','12312312','Jane','Doe'),
+('3108789976','abc@gmail.com','11111123','Joergen Von','Einer'),
+('0101014321','MAndersen@outlook.com','12345678','Mads','Andersen'),
+('1212988825','emmasky@gmail.com','87654321','Emma','Sky'),
+('2307127139','Unreasonablylongemailthatiswaytohardtorememberinownhead@gmail.com','88884312','Jan','Mikkelson'),
+('1203112231','mia23153@outlook.com','88776655','Mia','Mikkelson'),
+('1606047842','altdetgode@gmail.com','23234490','Karl Emil','Kraghe'),
+('1104671111','Nielsen.m@outlook.com','11992288','Maria','Nielsen'),
+('0102037755','elllar@gmail.com','12323556','Ella','Larsen'),
+('1309092385','Hemmeligperson@gmail.com','27346892','Agnes','Andersen'),
+('1010828850','Valde.ped27823@outlook.com','49027643','Valdemar','Pedersen'),
+('0710299836','2324234MS@gmail.com','38127374','Matheo','Soerensen'),
+('1111111111','Estherjensen@outlook.com','22736475','Esther','Jensen'),
+('2212978765','hannnnnnnnnnnnnnnnnnnnah83457@gmail.com','18239102','Hannah','Larsen');
