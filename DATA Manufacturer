@@ -1,0 +1,6 @@
+INSERT Manufacturer VALUES
+(11111,'Bike Parts'),
+(22222,'Only Bikes'),
+(43126,'All Things Bikes'),
+(12372,'Quality Bikes'),
+(11111,'Part Performance');
