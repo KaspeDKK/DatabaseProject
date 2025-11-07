@@ -19,11 +19,11 @@ CREATE TABLE Customer
 (
     customerCPR		VARCHAR(10), -- 123456 78910
     email_adress	VARCHAR(73), -- 64 max length + gmail.com, which should cover the majority of emails
-    phone_number	VARCHAR(10), -- 1-2 3-4 5-6 7-8 9-10
+    phone_number	VARCHAR(10), -- 1-2 3-4 5-6 7-8 - only 8 because only danes allowed as customers since only danes have CPR number
     first_name		VARCHAR(20), -- Reasonable limit
     last_name		VARCHAR(20), -- Reasonable limit
 
-    PRIMARY KEY(CPR)
+    PRIMARY KEY(customerCPR)
 );
 
 
@@ -32,11 +32,11 @@ CREATE TABLE Address
     street_name   VARCHAR(64), -- 64 max length is chosen to both cover the average street name length as well as outliers that might be longer
     civic_number  VARCHAR(6),  -- refers to the specific house number, VARCHAR to account for adresses like Kollegiebakken '15A'
     city          VARCHAR(64), -- 64 max length due to some cases of cities having very long names
-    ZIP_code      VARCHAR(12), -- 12 max length, ZIP code is represented by a varchar instead of an int due to large countries like Canada and the UK using a mix of numbers and letters
-    CPR           VARCHAR(10), -- Foreign key
+    ZIP_code      INT(4),  -- 4 max length because all danish postcodes are 4 digits, and only danes are allowed to repair in the shop since CPR is required to be a customer
+    customerCPR   VARCHAR(10), -- Foreign key
 
-    PRIMARY KEY(CPR),
-    FOREIGN KEY(CPR) REFERENCES Customer(CPR) ON DELETE CASCADE
+    PRIMARY KEY(customerCPR),
+    FOREIGN KEY(customerCPR) REFERENCES Customer(customerCPR) ON DELETE CASCADE
 );
 
 
@@ -48,6 +48,7 @@ CREATE TABLE Parts
     description        VARCHAR(100),                                        -- Description: Optional human-readable info about the part. Nullable because some manufacturers may omit it.                             
     unit_price         DECIMAL(8,2) CHECK (unit_price >= 0),                -- Unit_Price: Decimal value for the cost of one part. Nullable because prototypes or new parts may lack a price. CHECK constraint ensures non negative prices.
     
+    PRIMARY KEY (serial_number, manufacturerID),
     FOREIGN KEY (manufacturerID) REFERENCES Manufacturer(manufacturerID)    -- Foreign key linking parts to their manufacturer.
         ON DELETE RESTRICT                                                  -- ON DELETE RESTRICT: prevents deleting a manufacturer that still has parts.
   );
@@ -62,7 +63,7 @@ CREATE TABLE Bikes
     bike_weight DECIMAL(5,2),                                               -- weight in kg
     bike_wheel_diameter DECIMAL(4,1),                                       -- diameter in inches
     
-    PRIMARY KEY (serial_number, manufacturerID)
+    PRIMARY KEY (serial_number, manufacturerID),
     FOREIGN KEY (manufacturerID) REFERENCES Manufacturer(manufacturerID)
         ON DELETE RESTRICT                                                  -- ON DELETE RESTRICT: prevents deleting a manufacturer that still has parts.
 );
@@ -70,15 +71,18 @@ CREATE TABLE Bikes
 
 CREATE TABLE CompatibleParts
 (
-    PartSN   VARCHAR(20),                                           -- PartSN: Foreign key referencing a part (SerialNumber), each row links one partt to one compatible bike.
-    bike_SN   VARCHAR(20),                                          -- bike_SN: Foreign key referencing a bike (SerialNumber), Each row indicates that a specific bike can use a specific part.
+    part_SN VARCHAR(20),
+    part_manufacturerID INT, -- parts dont have to have the same manufacturer as the bike to be compatible
+    bike_SN VARCHAR(20),
+    bike_manufacturerID INT, -- bikes dont have to have the same manufacturer as the part to be compatible
+    
+    PRIMARY KEY (part_SN, bike_SN),
 
-    PRIMARY KEY (PartSN, bike_SN),                                  -- Composite Primary Key
-    FOREIGN KEY (PartSN) REFERENCES Parts(serial_number)             -- Foreign key linking to Parts table.
-        ON DELETE CASCADE,                                          -- ON DELETE CASCADE: if a part is deleted, all its compatibility links are deleted.
-
-    FOREIGN KEY (bike_SN) REFERENCES Bikes(serial_number)            -- Foreign key linking to Bikes table.
-        ON DELETE CASCADE                                           -- ON DELETE CASCADE: if a bike is deleted, all its compatibility records are removed.
+    FOREIGN KEY (part_SN, part_manufacturerID)
+        REFERENCES Parts(serial_number, manufacturerID),
+    
+    FOREIGN KEY (bike_SN, bike_manufacturerID)
+        REFERENCES Bikes(serial_number, manufacturerID)
 );
 
 
@@ -87,6 +91,7 @@ CREATE TABLE RepairJobs
 
     customerCPR VARCHAR(10) ,
     bike_SN VARCHAR(20),
+    bike_manufacturerID INT,
     repair_date DATE,
     duration INT,               -- duration in minutes, since time would be a bit more complex to handle, we could also use decimal but then 1 hour 30 minutes would be 1.50
     
@@ -95,8 +100,11 @@ CREATE TABLE RepairJobs
     total_cost DECIMAL(8,2),    -- we will also calculate this later
 
     PRIMARY KEY (customerCPR, bike_SN, repair_date),
+
     FOREIGN KEY (customerCPR) REFERENCES Customer(customerCPR),
-    FOREIGN KEY (bike_SN) REFERENCES Bikes(serial_number)
+    FOREIGN KEY (bike_SN, bike_manufacturerID)
+        REFERENCES Bikes(serial_number, manufacturerID)
+        ON DELETE RESTRICT -- dont delete a bike thats referenced in repairjobs.
 );
 
 
@@ -104,19 +112,26 @@ CREATE TABLE Uses
 (
     repair_date DATE,
     bike_SN VARCHAR(20),
+    bike_manufacturerID INT,
     parts_SN VARCHAR(20),
+    parts_manufacturerID INT,
     customerCPR VARCHAR(10),
 
     PRIMARY KEY (parts_SN, bike_SN, repair_date),
 
     FOREIGN KEY (customerCPR, bike_SN, repair_date)
-        REFERENCES RepairJobs (customerCPR, bikesSN, repair_date) -- we need to use the whole composite key
-        ON DELETE RESTRICT,
+        REFERENCES RepairJobs (customerCPR, bike_SN, repair_date)
+        ON DELETE RESTRICT, -- Maybe use cascade here instead. Needs to be discussed
 
-    FOREIGN KEY (parts_SN)
-        REFERENCES Parts(serial_number)
-        ON DELETE RESTRICT
+    FOREIGN KEY (bike_SN, bike_manufacturerID)
+        REFERENCES Bikes(serial_number, manufacturerID)
+        ON DELETE RESTRICT, -- We need to figure out what happens to a bike when its used. What does using a bike mean? My guess is we restrict deleting bikes. Makes sense to me
+
+    FOREIGN KEY (parts_SN, parts_manufacturerID)
+        REFERENCES Parts(serial_number, manufacturerID)
+        ON DELETE RESTRICT -- We need to figure out what happens to a part when its used. Do we delete it?
 );
+
 
 
 -- Insert data
