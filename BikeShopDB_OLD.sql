@@ -17,9 +17,9 @@ CREATE TABLE Manufacturer
 
 CREATE TABLE Customer 
 (
-    customerCPR		VARCHAR(10), -- 123456 78910
-    email_adress	VARCHAR(73), -- 64 max length + gmail.com, which should cover the majority of emails
-    phone_number	VARCHAR(10), -- 1-2 3-4 5-6 7-8 - only 8 because only danes allowed as customers since only danes have CPR number
+    customerCPR		VARCHAR(10) NOT NULL, -- 123456 78910
+    email_address	VARCHAR(73), -- 64 max length + gmail.com, which should cover the majority of emails. 
+    phone_number	VARCHAR(10) NOT NULL, -- 1-2 3-4 5-6 7-8 - only 8 because only danes allowed as customers since only danes have CPR number. We choose phone nr to have not null. Not because its required for functionality in the DB, but because it makes sense for the business to have at least 1 form of contact with the customer.
     first_name		VARCHAR(20), -- Reasonable limit
     last_name		VARCHAR(20), -- Reasonable limit
 
@@ -42,7 +42,7 @@ CREATE TABLE Address
 
 CREATE TABLE Parts
   (
-    serial_number      VARCHAR(20) PRIMARY KEY,                             -- SerialNumber: Globally unique identifier for each part. Primary Key implies NOT NULL automatically.             
+    serial_number      VARCHAR(20) NOT NULL,                                -- SerialNumber: Globally unique identifier for each part. Primary Key implies NOT NULL automatically.             
     manufacturerID     INT NOT NULL,                                        -- ManufacturerID: Foreign key to Manufacturer table. NOT NULL ensures total participation, each part must belong to one manufacturer.
     code               VARCHAR(20) NOT NULL,                                -- Code: Manufacturer-specific part code (fx. "BRK-102"). is Required for identification in catalogs. NOT NULL ensures every part has a code.                                                     
     description        VARCHAR(100),                                        -- Description: Optional human-readable info about the part. Nullable because some manufacturers may omit it.                             
@@ -56,7 +56,7 @@ CREATE TABLE Parts
 
 CREATE TABLE Bikes 
 (
-    serial_number VARCHAR(20),                                              -- WTU108C2032D....
+    serial_number VARCHAR(20) NOT NULL,                                     -- WTU108C2032D....
     manufacturerID INT NOT NULL,
     bike_type VARCHAR(40),                                                  -- Mountain Bike, Road Bike BMX etc
     bike_speeds INT,                                                        -- number of gears

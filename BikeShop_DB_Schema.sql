@@ -1,0 +1,114 @@
+SET SQL_SAFE_UPDATES = 0;
+DROP DATABASE IF EXISTS BikeRepairShop;
+CREATE DATABASE BikeRepairShop;
+USE BikeRepairShop;
+
+CREATE TABLE Customer (
+    customerCPR		CHAR(10),               -- 123456 78910
+    first_name		VARCHAR(20),            -- Reasonable limit
+    last_name		VARCHAR(20),            -- Reasonable limit
+    email_address	VARCHAR(73),            -- 64 max length + gmail.com, which should cover the majority of emails. 
+    phone_number	VARCHAR(10) NOT NULL,   -- 1-2 3-4 5-6 7-8 - only 8 because only danes allowed as customers since only danes have CPR number. We choose phone nr to have not null. Not because its required for functionality in the DB, but because it makes sense for the business to have at least 1 form of contact with the customer.
+
+    PRIMARY KEY(customerCPR)
+);
+
+CREATE TABLE Address (
+    customerCPR		CHAR(10),   -- fk
+    street_name   VARCHAR(64),  -- 64 max length is chosen to both cover the average street name length as well as outliers that might be longer
+    civic_number  VARCHAR(6),   -- refers to the specific house number, VARCHAR to account for adresses like Kollegiebakken '15A'
+    city          VARCHAR(64),  -- 64 max length due to some cases of cities having very long names
+    ZIP_code      CHAR(4),      -- we will use char(4) because all danish postcodes are 4 digits always, and only danes are allowed to repair in the shop since CPR is required to be a customer. Why not INT? because the example of DR Byen : "0999" which starts with a 0. Which is not possible for INT
+
+    PRIMARY KEY(customerCPR),
+    FOREIGN KEY(customerCPR) 
+        REFERENCES Customer(customerCPR) 
+        ON DELETE CASCADE       -- We dont need to retain adress if a customer is removed
+);
+
+CREATE TABLE Manufacturer (
+    manufacturer_ID     INT,            -- we will use 5 digits. its sufficient to always have a unique ID, 6 million possibilites - name is insufficient as we operate with bikes and parts from many countries, and cant garuantee that there arent two companies called E.g "Bikeparts". ID will be assigned by the bikeshop and we wont use autoincrement in accordance with the projects policy.
+    manufacturer_name   VARCHAR(64),    -- 64 Characters should be enough for manufacturer name, changed from "name" since name is a keyword. We could use it, but we do not consider that a good practice 
+
+    PRIMARY KEY(manufacturer_ID)
+);
+
+CREATE TABLE Bikes (
+    bike_code       VARCHAR(10),    -- Its undefined in the requirements what the code would look like. Its possible it can be e.g "A-49-Zero" so it should be a varchar
+    manufacturer_ID INT,            -- fk
+    type            VARCHAR(20),    -- Bike type name e.g "Mountain Bike"
+    speeds          INT,            -- number of gears on the bike
+    weight          DECIMAL(5,2),   -- weight in kg
+    wheel_diameter  DECIMAL(4,1),   -- diameter in inches
+
+    PRIMARY KEY (bike_code),   
+
+    FOREIGN KEY (manufacturer_ID) 
+        REFERENCES Manufacturer(manufacturer_ID)
+        ON DELETE CASCADE -- If a manufacturer is removed we can assume that the bikes they produce are no longer relevant either.
+);
+
+CREATE TABLE Parts (
+    part_code       VARCHAR(10),    -- Same argument as bike code
+    manufacturer_ID INT,            -- fk
+    description     VARCHAR(256),   -- Fair length (rougly 50 words on average). Should be enough for a short description.
+    unit_price      DECIMAL(8,2),
+
+    PRIMARY KEY (part_code),   
+
+    FOREIGN KEY (manufacturer_ID) 
+        REFERENCES Manufacturer(manufacturer_ID)
+        ON DELETE CASCADE -- If a manufacturer is removed we can assume that the parts they produce are no longer relevant either.
+);
+
+CREATE TABLE RepairJobs (
+
+    repair_ID   INT,            -- Unique ID with the same complexity as manufacturers ID. Each repair job is uniquely identified by a manually assigned repair_ID. It is a surrogate key because no natural key (e.g., date + customer + bike) can guarantee uniqueness as a customer may bring in two bikes of the same exact variant on the same date. We avoid AUTO_INCREMENT in line with project policy and assume repair IDs are generated systematically by the business (e.g., “R001”, “R002”, …)
+    customerCPR CHAR(10),       -- fk
+    bike_code   VARCHAR(10),    -- fk
+    repair_date DATE,
+    duration    INT,            -- duration in minutes, since time would be a bit more complex to handle, we could also use decimal but then 1 hour 30 minutes would be 1.5. We may as well input 90 minutes
+    
+    total_cost DECIMAL(8,2),    -- we will calculate this later as its a derived attribute. Will be null until computed
+
+    PRIMARY KEY (repair_ID),
+
+    FOREIGN KEY (customerCPR) 
+        REFERENCES Customer(customerCPR)
+        ON DELETE RESTRICT,          -- dont delete a customer thats referenced in repairjobs.
+    
+    FOREIGN KEY (bike_code)
+        REFERENCES Bikes(bike_code)
+        ON DELETE RESTRICT          -- dont delete a bike thats referenced in repairjobs.
+);
+
+CREATE TABLE Uses (
+    repair_ID   INT,            -- fk
+    part_code   VARCHAR(10),    -- fk
+    quantity    INT,            -- number of parts used.
+
+    PRIMARY KEY (repair_ID, part_code),
+
+    FOREIGN KEY (repair_ID) 
+        REFERENCES RepairJobs(repair_ID)
+        ON DELETE CASCADE,      -- No reason to keep uses if the repair job is removed
+
+    FOREIGN KEY (part_code) 
+        REFERENCES Parts(part_code)
+);
+
+CREATE TABLE CompatibleParts (
+    bike_code   VARCHAR(10), -- fk
+    part_code   VARCHAR(10), -- fk
+
+    PRIMARY KEY (bike_code, part_code),
+
+    FOREIGN KEY (bike_code) 
+        REFERENCES Bikes(bike_code)
+        ON DELETE CASCADE, -- If a bike is removed that compatibility is automatically void
+
+    FOREIGN KEY (part_code) 
+        REFERENCES Parts(part_code)
+        ON DELETE CASCADE -- If a part is removed that compatibility is automatically void
+);
+
