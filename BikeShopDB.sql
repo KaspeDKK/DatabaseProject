@@ -192,7 +192,7 @@ INSERT INTO Parts VALUES
 ('P-600','98765','Universal inner tube, 26-29 inch range',90.00);
 
 -- REPAIR JOBS
--- Manually assigned IDs, demonstrating surrogate key logic.
+-- Manually assigned IDs, demonstrating surrogate key logic. (we have to argue why this is preffered over composite key (CPR, Bike, Date))
 -- total_cost remains NULL (derived attribute later)
 INSERT INTO RepairJobs VALUES
 (1,'1308981817','BK-F600','2023-12-19',90,NULL),
