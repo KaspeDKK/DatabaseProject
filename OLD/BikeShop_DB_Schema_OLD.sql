@@ -112,3 +112,4 @@ CREATE TABLE CompatibleParts (
         ON DELETE CASCADE -- If a part is removed that compatibility is automatically void
 );
 
+-- INSERT DATA BELOW
