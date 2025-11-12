@@ -1,4 +1,4 @@
---Show the CPR number of all customers who got one of their bike repaired more than once.
+-- Show the CPR number of all customers who got one of their bike repaired more than once.
 
 -- Show the code and manufacturer of all parts that were never used for any repair
 
