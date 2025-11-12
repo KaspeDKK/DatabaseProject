@@ -1,5 +1,7 @@
 -- Show the CPR number of all customers who got one of their bike repaired more than once.
-
+SELECT customerCPR FROM RepairJobs
+GROUP BY customerCPR
+HAVING COUNT(customerCPR)>1;
 -- Show the code and manufacturer of all parts that were never used for any repair
 
 -- For each part, show the code, manufacturer, and total quantity being used for all repair jobs in 2024
