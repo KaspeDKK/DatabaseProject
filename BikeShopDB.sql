@@ -221,12 +221,12 @@ INSERT INTO Uses VALUES
 -- Demonstrates many-to-many relationships between bikes and parts.
 -- Some parts compatible with multiple bikes and vice versa.
 INSERT INTO CompatibleParts VALUES
-('BK-A100','P-100'),
-('BK-A100','P-200'),
-('BK-B200','P-101'),
-('BK-C300','P-400'),
-('BK-D400','P-500'),
-('BK-E500','P-400'),
-('BK-E500','P-600'),
-('BK-F600','P-600'),
-('BK-F600','P-300');
+('BK-A100','P-100','11111','11111'),
+('BK-A100','P-200','11111','11111'),
+('BK-B200','P-101','22222','22222'),
+('BK-C300','P-400'.'43126','55555'),
+('BK-D400','P-500','33333','43126'),
+('BK-E500','P-400','12372','55555'),
+('BK-E500','P-600','12372','98765'),
+('BK-F600','P-600','98765','98765'),
+('BK-F600','P-300','98765','55555');
