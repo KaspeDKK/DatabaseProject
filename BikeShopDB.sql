@@ -41,7 +41,7 @@ CREATE TABLE Bikes (
     weight          DECIMAL(5,2),   -- weight in kg
     wheel_diameter  DECIMAL(4,1),   -- diameter in inches
 
-    PRIMARY KEY (bike_code),   
+    PRIMARY KEY (bike_code, manufacturer_ID), -- ADDED MANU ID
 
     FOREIGN KEY (manufacturer_ID) 
         REFERENCES Manufacturer(manufacturer_ID)
@@ -54,7 +54,7 @@ CREATE TABLE Parts (
     description     VARCHAR(256),   -- Fair length (rougly 50 words on average). Should be enough for a short description.
     unit_price      DECIMAL(8,2),
 
-    PRIMARY KEY (part_code),   
+    PRIMARY KEY (part_code, manufacturer_ID), -- Added Manu ID
 
     FOREIGN KEY (manufacturer_ID) 
         REFERENCES Manufacturer(manufacturer_ID)
@@ -85,32 +85,38 @@ CREATE TABLE RepairJobs (
 CREATE TABLE Uses (
     repair_ID   INT,            -- fk
     part_code   VARCHAR(10),    -- fk
+    part_manufacturer INT,      -- manufacturer ID
     quantity    INT,            -- number of parts used.
 
-    PRIMARY KEY (repair_ID, part_code),
+    PRIMARY KEY (repair_ID, part_code,part_manufacturer),
 
     FOREIGN KEY (repair_ID) 
         REFERENCES RepairJobs(repair_ID)
-        ON DELETE CASCADE,      -- No reason to keep uses if the repair job is removed
+        ON DELETE CASCADE, -- No reason to keep uses if the repair job is removed
 
-    FOREIGN KEY (part_code) 
-        REFERENCES Parts(part_code)
+    FOREIGN KEY (part_code, part_manufacturer) 
+        REFERENCES Parts(part_code,manufacturer_ID) -- references both part code and manufacturer id now
+
 );
 
 CREATE TABLE CompatibleParts (
     bike_code   VARCHAR(10), -- fk
     part_code   VARCHAR(10), -- fk
+    bike_manufacturer INT, -- unique 5 digit ID
+    part_manufacturer INT, -- unique 5 digit ID
 
-    PRIMARY KEY (bike_code, part_code),
 
-    FOREIGN KEY (bike_code) 
-        REFERENCES Bikes(bike_code)
+    PRIMARY KEY (bike_code, part_code,bike_manufacturer,part_manufacturer),
+
+    FOREIGN KEY (bike_code,bike_manufacturer) 
+        REFERENCES Bikes(bike_code,manufacturer_ID)
         ON DELETE CASCADE, -- If a bike is removed that compatibility is automatically void
 
-    FOREIGN KEY (part_code) 
-        REFERENCES Parts(part_code)
+    FOREIGN KEY (part_code,part_manufacturer) 
+        REFERENCES Parts(part_code,manufacturer_ID)
         ON DELETE CASCADE -- If a part is removed that compatibility is automatically void
 );
+
 
 -- INSERT DATA BELOW
 -- MANUFACTURERS
@@ -173,23 +179,23 @@ INSERT INTO Address VALUES
 -- Manufacturer 11111 and 22222 both named "Bike Parts" to show name-duplication tolerance.
 -- IDs are manually assigned, bike_code uses VARCHAR with mixed letters/numbers to illustrate flexibility.
 INSERT INTO Bikes VALUES
-('BK-A100','11111','Mountain Bike',18,14.50,27.5),
-('BK-B200','22222','Mountain Bike',18,14.55,27.5), -- nearly identical bike from different manufacturer
-('BK-C300','43126','Road Bike',22,9.50,28.0),
-('BK-D400','33333','Hybrid',21,12.10,27.0),
-('BK-E500','12372','Electric',8,24.00,29.0),
-('BK-F600','98765','City',7,11.20,26.0);
+('BK-A100',11111,'Mountain Bike',18,14.50,27.5),
+('BK-B200',22222,'Mountain Bike',18,14.55,27.5), -- nearly identical bike from different manufacturer
+('BK-C300',43126,'Road Bike',22,9.50,28.0),
+('BK-D400',33333,'Hybrid',21,12.10,27.0),
+('BK-E500',12372,'Electric',8,24.00,29.0),
+('BK-F600',98765,'City',7,11.20,26.0);
 
 -- PARTS
 -- Same idea: multiple manufacturers with overlapping part names, long descriptions, and realistic prices.
 INSERT INTO Parts VALUES
-('P-100','11111','Bike chain 9-speed - stainless steel, rust resistant, designed for mountain bikes',120.50),
-('P-101','22222','Bike chain 9-speed - identical name but different manufacturer',119.99),
-('P-200','11111','Front wheel 27.5 inch, reinforced rim, compatible with BK-A100',340.00),
-('P-300','55555','Hydraulic brake lever with ergonomic grip and anti-slip design',290.00),
-('P-400','55555','Bike seat ergonomic with double padding and weatherproof leather cover',150.00),
-('P-500','43126','Pedal set with reflectors, alloy build',180.00),
-('P-600','98765','Universal inner tube, 26-29 inch range',90.00);
+('P-100',11111,'Bike chain 9-speed - stainless steel, rust resistant, designed for mountain bikes',120.50),
+('P-101',22222,'Bike chain 9-speed - identical name but different manufacturer',119.99),
+('P-200',11111,'Front wheel 27.5 inch, reinforced rim, compatible with BK-A100',340.00),
+('P-300',55555,'Hydraulic brake lever with ergonomic grip and anti-slip design',290.00),
+('P-400',55555,'Bike seat ergonomic with double padding and weatherproof leather cover',150.00),
+('P-500',43126,'Pedal set with reflectors, alloy build',180.00),
+('P-600',98765,'Universal inner tube, 26-29 inch range',90.00);
 
 -- REPAIR JOBS
 -- Manually assigned IDs, demonstrating surrogate key logic. (we have to argue why this is preffered over composite key (CPR, Bike, Date))
@@ -207,26 +213,26 @@ INSERT INTO RepairJobs VALUES
 -- Illustrates 1-to-many and many-to-many relationships.
 -- One repair uses multiple parts, some parts used multiple times, etc.
 INSERT INTO Uses VALUES
-(1,'P-300', '55555', 1),
-(1,'P-600', '98765', 2),
-(2,'P-101', '22222' ,1),
-(3,'P-400', '55555', 1),
-(4,'P-500', '43126', 1),
-(5,'P-400', '55555', 2),
-(5,'P-600', '98765', 1),
-(6,'P-100', '11111', 3),
-(6,'P-200', '11111', 1);
+(1,'P-300', 55555, 1),
+(1,'P-600', 98765, 2),
+(2,'P-101', 22222 ,1),
+(3,'P-400', 55555, 1),
+(4,'P-500', 43126, 1),
+(5,'P-400', 55555, 2),
+(5,'P-600', 98765, 1),
+(6,'P-100', 11111, 3),
+(6,'P-200', 11111, 1);
 
 -- COMPATIBLE PARTS
 -- Demonstrates many-to-many relationships between bikes and parts.
 -- Some parts compatible with multiple bikes and vice versa.
 INSERT INTO CompatibleParts VALUES
-('BK-A100','P-100','11111','11111'),
-('BK-A100','P-200','11111','11111'),
-('BK-B200','P-101','22222','22222'),
-('BK-C300','P-400'.'43126','55555'),
-('BK-D400','P-500','33333','43126'),
-('BK-E500','P-400','12372','55555'),
-('BK-E500','P-600','12372','98765'),
-('BK-F600','P-600','98765','98765'),
-('BK-F600','P-300','98765','55555');
+('BK-A100','P-100',11111, 11111),
+('BK-A100','P-200',11111, 11111),
+('BK-B200','P-101',22222, 22222),
+('BK-C300','P-400',43126, 55555),
+('BK-D400','P-500',33333, 43126),
+('BK-E500','P-400',12372, 55555),
+('BK-E500','P-600',12372, 98765),
+('BK-F600','P-600',98765, 98765),
+('BK-F600','P-300',98765, 55555);
