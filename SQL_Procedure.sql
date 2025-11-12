@@ -10,68 +10,46 @@ A Repair Job is identified by : repair id
 
 */
 
+-- Look in uses first
+SELECT * FROM uses WHERE part_code = 'P-300' AND repair_ID = 1;
+
+DROP PROCEDURE IF EXISTS InsertParts;
 DELIMITER //
 CREATE PROCEDURE InsertParts (
-IN vPart_Code VARCHAR(10), vManufacturer_ID INT, vQuantity INT, vRepair_ID INT)
+IN vPart_Code VARCHAR(10), 
+IN vManufacturer_ID INT, 
+IN vQuantity INT, 
+IN vRepair_ID INT
+)
 
 BEGIN
+/* 	If the part is not already in uses with that specific repair job, then create it with the assigned quantity
+	If the part is ALREADY in uses with that specific repair job, then add the assigned quantity to the current quantity */ 
+DECLARE vExists INT;
 
-/* If the part is not already in uses with that specific repair job, then create it with the assigned quantity
-    If the part is ALREADY in uses with that specific repair job, then add the assigned quantity to the current quantity
-*/ 
+SELECT COUNT(*) INTO vExists FROM uses 
+	WHERE part_code = vPart_Code
+    AND part_manufacturer = vManufacturer_ID
+    AND repair_ID = vRepair_ID;
 
-IF something = someginelse THEN
-
+IF vExists > 0 THEN
+	UPDATE Uses
+	SET quantity = quantity + vQuantity
+	WHERE part_code = vPart_Code
+	  AND part_manufacturer = vManufacturer_ID
+	  AND repair_ID = vRepair_ID;
 ELSE
-
+	INSERT INTO Uses (part_code, part_manufacturer, repair_ID, quantity)
+	VALUES (vPart_Code, vManufacturer_ID, vRepair_ID, vQuantity);
 END IF;
-
 END //
 DELIMITER ;
 
+# Test the procedure
+-- Inserts 3 P-300 parts that come from manufacturer[55555] into the repair-job with id [1]. 
+-- This information stored in the uses table
+CALL InsertParts('P-300', 55555, 3, 1); -- Those parts already exist for that repair job, so it updates
+CALL InsertParts('P-600', 98765, 5, 1); -- No parts already in uses for that repair job, so it inserts
 
-DELIMITER //
-CREATE PROCEDURE InstBackup1 ()
-BEGIN
-	DECLARE vSQLSTATE CHAR(5) DEFAULT '00000';
-	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION
-	# this handler statement below ensures that
-	# if an exception is raised by SQL during the transaction
-	# then vSQLSTATE will be assigned a value <> '00000'
-	# and continue
-	BEGIN
-		GET DIAGNOSTICS CONDITION 1
-		vSQLSTATE = RETURNED_SQLSTATE;
-	END;
-    
-	START TRANSACTION;
-    
-	DELETE FROM InstOld; -- CLEAR OLD BACKUP
-	INSERT INTO InstOld (InstID, InstName, DeptName, Salary) SELECT * FROM instructor; -- INSERT COPY INTO BACKUP
-	DELETE FROM InstLog; -- CLEAR LOGS
-    
-	-- SELECT vSQLSTATE;
-    IF vSQLSTATE = '00000' THEN
-		COMMIT; -- Backup Succesfull
-    ELSE
-		ROLLBACK; -- Backup failed - Restores logs and old backup
-	END IF;
-END//
-DELIMITER ;
-
-# Test the procedure before and after “DROP TABLE InstLog;”.
-INSERT Instructor VALUES ('10000', 'Hansen', 'Comp. Sci.', 50000);
-SELECT * FROM InstLog;
-SET SQL_SAFE_UPDATES = 0;
-
-CALL InstBackup1;
-
-SELECT * FROM Instructor;
-SELECT * FROM InstOld;
-SELECT * FROM InstLog;
-
-DROP TABLE InstLog;
-CALL InstBackup1;
-
-SELECT * FROM Instructor;
-SELECT * FROM InstOld;
+-- Look in uses again
+SELECT * FROM uses WHERE part_code = 'P-300' OR part_code = 'P-600' AND repair_ID = 1;
