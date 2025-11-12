@@ -8,7 +8,7 @@ CREATE TABLE Customer (
     first_name		VARCHAR(20),            -- Reasonable limit
     last_name		VARCHAR(20),            -- Reasonable limit
     email_address	VARCHAR(73),            -- 64 max length + gmail.com, which should cover the majority of emails. 
-    phone_number	VARCHAR(10) NOT NULL,   -- 1-2 3-4 5-6 7-8 - only 8 because only danes allowed as customers since only danes have CPR number. We choose phone nr to have not null. Not because its required for functionality in the DB, but because it makes sense for the business to have at least 1 form of contact with the customer.
+    phone_number	INT NOT NULL,           -- 1-2 3-4 5-6 7-8 - only 8 because only danes allowed as customers since only danes have CPR number. We choose phone nr to have not null. Not because its required for functionality in the DB, but because it makes sense for the business to have at least 1 form of contact with the customer.
 
     PRIMARY KEY(customerCPR)
 );
@@ -135,21 +135,21 @@ INSERT INTO Manufacturer VALUES
 -- Two customers share the same last name and even live together (shows same address later).
 -- One customer has an extremely long email to show VARCHAR(73) works.
 INSERT INTO Customer VALUES
-('1308981817','John','Name','John@gmail.com','22334455'),
-('1212824762','Jane','Doe','JaneTheDoeWithLongEmailAddress@gmail.com','12312312'),
-('3108789976','Joergen','Von Einer','abc@gmail.com','11111123'),
-('0101014321','Mads','Andersen','MAndersen@outlook.com','12345678'),
-('1212988825','Emma','Sky','emmasky@gmail.com','87654321'),
-('2307127139','Jan','Mikkelson','Unreasonablylongemailthatiswaytohardtorememberinownhead@gmail.com','88884312'),
-('1203112231','Mia','Mikkelson','mia23153@outlook.com','88776655'),
-('1606047842','Karl Emil','Kraghe','altdetgode@gmail.com','23234490'),
-('1104671111','Maria','Nielsen','Nielsen.m@outlook.com','11992288'),
-('0102037755','Ella','Larsen','elllar@gmail.com','12323556'),
-('1309092385','Agnes','Andersen','Hemmeligperson@gmail.com','27346892'),
-('1010828850','Valdemar','Pedersen','Valde.ped27823@outlook.com','49027643'),
-('0710299836','Matheo','Soerensen','2324234MS@gmail.com','38127374'),
-('1111111111','Esther','Jensen','Estherjensen@outlook.com','22736475'),
-('2212978765','Hannah','Larsen','hannnnnnnnnnnnnnnnnnnnah83457@gmail.com','18239102');
+('1308981817','John','Name','John@gmail.com',22334455),
+('1212824762','Jane','Doe','JaneTheDoeWithLongEmailAddress@gmail.com',12312312),
+('3108789976','Joergen','Von Einer','abc@gmail.com',11111123),
+('0101014321','Mads','Andersen','MAndersen@outlook.com',12345678),
+('1212988825','Emma','Sky','emmasky@gmail.com',87654321),
+('2307127139','Jan','Mikkelson','Unreasonablylongemailthatiswaytohardtorememberinownhead@gmail.com',88884312),
+('1203112231','Mia','Mikkelson','mia23153@outlook.com',88776655),
+('1606047842','Karl Emil','Kraghe','altdetgode@gmail.com',23234490),
+('1104671111','Maria','Nielsen','Nielsen.m@outlook.com',11992288),
+('0102037755','Ella','Larsen','elllar@gmail.com',12323556),
+('1309092385','Agnes','Andersen','Hemmeligperson@gmail.com',27346892),
+('1010828850','Valdemar','Pedersen','Valde.ped27823@outlook.com',49027643),
+('0710299836','Matheo','Soerensen','2324234MS@gmail.com',38127374),
+('1111111111','Esther','Jensen','Estherjensen@outlook.com',22736475),
+('2212978765','Hannah','Larsen','hannnnnnnnnnnnnnnnnnnnah83457@gmail.com',18239102);
 
 -- ADDRESSES
 -- Includes edge cases: 
