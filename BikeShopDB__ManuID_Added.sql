@@ -86,15 +86,16 @@ CREATE TABLE Uses (
     repair_ID   INT,            -- fk
     part_code   VARCHAR(10),    -- fk
     quantity    INT,            -- number of parts used.
+    part_manufacturer INT, -- manufacturer ID
 
-    PRIMARY KEY (repair_ID, part_code),
+    PRIMARY KEY (repair_ID, part_code,part_manufacturer),
 
     FOREIGN KEY (repair_ID) 
         REFERENCES RepairJobs(repair_ID)
         ON DELETE CASCADE,      -- No reason to keep uses if the repair job is removed
 
-    FOREIGN KEY (part_code) 
-        REFERENCES Parts(part_code)
+    FOREIGN KEY (part_code, part_manufacturer) 
+        REFERENCES Parts(part_code,manufacturer_ID) -- references both part code and manufacturer id now
 );
 
 CREATE TABLE CompatibleParts (
