@@ -8,6 +8,8 @@ A part is identified by : part_code, manufacturer_ID
 
 A Repair Job is identified by : repair id
 
+Remember to refresh "BikeShopDB.sql" upon testing.
+
 */
 
 -- Look in uses first
