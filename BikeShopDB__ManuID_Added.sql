@@ -100,15 +100,18 @@ CREATE TABLE Uses (
 CREATE TABLE CompatibleParts (
     bike_code   VARCHAR(10), -- fk
     part_code   VARCHAR(10), -- fk
+    bike_manufacturer INT, -- unique 5 digit ID
+    part_manufacturer INT, -- unique 5 digit ID
 
-    PRIMARY KEY (bike_code, part_code),
 
-    FOREIGN KEY (bike_code) 
-        REFERENCES Bikes(bike_code)
+    PRIMARY KEY (bike_code, part_code,bike_manufacturer,part_manufacturer),
+
+    FOREIGN KEY (bike_code,bike_manufacturer) 
+        REFERENCES Bikes(bike_code,manufacturer_ID)
         ON DELETE CASCADE, -- If a bike is removed that compatibility is automatically void
 
-    FOREIGN KEY (part_code) 
-        REFERENCES Parts(part_code)
+    FOREIGN KEY (part_code,bike_manufacturer) 
+        REFERENCES Parts(part_code,manufacturer_ID)
         ON DELETE CASCADE -- If a part is removed that compatibility is automatically void
 );
 
