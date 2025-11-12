@@ -207,15 +207,15 @@ INSERT INTO RepairJobs VALUES
 -- Illustrates 1-to-many and many-to-many relationships.
 -- One repair uses multiple parts, some parts used multiple times, etc.
 INSERT INTO Uses VALUES
-(1,'P-100', '11111', 1),
-(1,'P-200', '11111', 2),
+(1,'P-300', '55555', 1),
+(1,'P-600', '98765', 2),
 (2,'P-101', '22222' ,1),
 (3,'P-400', '55555', 1),
-(3,'P-100', '11111', 1),
-(4,'P-500', '43126', 2),
-(5,'P-400', '55555', 1),
-(6,'P-600', '98765', 3),
-(6,'P-300', '55555', 1);
+(4,'P-500', '43126', 1),
+(5,'P-400', '55555', 2),
+(5,'P-600', '98765', 1),
+(6,'P-100', '11111', 3),
+(6,'P-200', '11111', 1);
 
 -- COMPATIBLE PARTS
 -- Demonstrates many-to-many relationships between bikes and parts.
