@@ -117,7 +117,6 @@ CREATE TABLE CompatibleParts (
         ON DELETE CASCADE -- If a part is removed that compatibility is automatically void
 );
 
-
 -- INSERT DATA BELOW
 -- MANUFACTURERS
 -- Two manufacturers share the same name ("Bike Parts") but have unique IDs to demonstrate
