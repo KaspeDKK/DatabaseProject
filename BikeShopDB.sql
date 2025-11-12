@@ -194,7 +194,8 @@ INSERT INTO Parts VALUES
 ('P-300',55555,'Hydraulic brake lever with ergonomic grip and anti-slip design',290.00),
 ('P-400',55555,'Bike seat ergonomic with double padding and weatherproof leather cover',150.00),
 ('P-500',43126,'Pedal set with reflectors, alloy build',180.00),
-('P-600',98765,'Universal inner tube, 26-29 inch range',90.00);
+('P-600',98765,'Universal inner tube, 26-29 inch range',90.00),
+('P-123',11111,'Front wheel 20 inch, standard rim, universal',100.00);
 
 -- REPAIR JOBS
 -- Manually assigned IDs, demonstrating surrogate key logic. (we have to argue why this is preffered over composite key (CPR, Bike, Date))
