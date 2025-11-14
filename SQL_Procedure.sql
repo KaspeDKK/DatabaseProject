@@ -77,7 +77,7 @@ DELIMITER ;
 
 
 --  Test the procedure
--- Inserts 3 P-300 parts that come from manufacturer[55555] into the repair-job with id [1]. 
+-- The first one adds 3 P-400 parts that come from manufacturer[55555] into the repair-job with id [5].
 -- This information stored in the uses table
 CALL InsertParts('P-400', 55555, 3, 5); -- No parts already in uses for that repair job, so it inserts
 CALL InsertParts('P-600', 98765, 5, 5); -- Those parts already exist for that repair job, so it updates
