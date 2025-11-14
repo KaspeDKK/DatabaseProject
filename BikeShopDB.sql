@@ -63,11 +63,12 @@ CREATE TABLE Parts (
 
 CREATE TABLE RepairJobs (
 
-    repair_ID   INT,            -- Unique ID with the same complexity as manufacturers ID. Each repair job is uniquely identified by a manually assigned repair_ID. It is a surrogate key because no natural key (e.g., date + customer + bike) can guarantee uniqueness as a customer may bring in two bikes of the same exact variant on the same date. We avoid AUTO_INCREMENT in line with project policy and assume repair IDs are generated systematically by the business (e.g., “R001”, “R002”, …)
-    customerCPR CHAR(10),       -- fk
-    bike_code   VARCHAR(10),    -- fk
-    repair_date DATE,
-    duration    INT,            -- duration in minutes, since time would be a bit more complex to handle, we could also use decimal but then 1 hour 30 minutes would be 1.5. We may as well input 90 minutes
+    repair_ID           INT,            -- Unique ID with the same complexity as manufacturers ID. Each repair job is uniquely identified by a manually assigned repair_ID. It is a surrogate key because no natural key (e.g., date + customer + bike) can guarantee uniqueness as a customer may bring in two bikes of the same exact variant on the same date. We avoid AUTO_INCREMENT in line with project policy and assume repair IDs are generated systematically by the business (e.g., “R001”, “R002”, …)
+    bike_code           VARCHAR(10),    -- fk
+    bike_manufacturer   INT,            -- fk
+    customerCPR         CHAR(10),       -- fk
+    repair_date         DATE,
+    duration            INT,            -- duration in minutes, since time would be a bit more complex to handle, we could also use decimal but then 1 hour 30 minutes would be 1.5. We may as well input 90 minutes
     
     total_cost DECIMAL(8,2),    -- we will calculate this later as its a derived attribute. Will be null until computed
 
@@ -77,9 +78,9 @@ CREATE TABLE RepairJobs (
         REFERENCES Customer(customerCPR)
         ON DELETE RESTRICT,          -- dont delete a customer thats referenced in repairjobs.
     
-    FOREIGN KEY (bike_code)
-        REFERENCES Bikes(bike_code)
-        ON DELETE RESTRICT          -- dont delete a bike thats referenced in repairjobs.
+    FOREIGN KEY (bike_code, bike_manufacturer)
+        REFERENCES Bikes(bike_code, manufacturer_ID)
+        ON DELETE RESTRICT -- dont delete a bike thats referenced in repairjobs.
 );
 
 CREATE TABLE Uses (
@@ -201,13 +202,13 @@ INSERT INTO Parts VALUES
 -- Manually assigned IDs, demonstrating surrogate key logic. (we have to argue why this is preffered over composite key (CPR, Bike, Date))
 -- total_cost remains NULL (derived attribute later)
 INSERT INTO RepairJobs VALUES
-(1,'1308981817','BK-F600','2023-12-19',90,NULL),
-(2,'1212824762','BK-B200','2024-03-15',60,NULL),
-(3,'3108789976','BK-C300','2024-04-10',120,NULL),
-(4,'0101014321','BK-D400','2025-04-12',45,NULL),
-(5,'1212988825','BK-E500','2025-05-01',180,NULL),
-(6,'1203112231','BK-A100','2025-05-01',100,NULL),
-(7,'1203112231','BK-A100','2025-05-15',25,NULL); -- No parts used in this job
+(1,'BK-F600',98765,'1308981817','2023-12-19',90,NULL),
+(2,'BK-B200',22222,'1212824762','2024-03-15',60,NULL),
+(3,'BK-C300',43126,'3108789976','2024-04-10',120,NULL),
+(4,'BK-D400',33333,'0101014321','2025-04-12',45,NULL),
+(5,'BK-E500',12372,'1212988825','2025-05-01',180,NULL),
+(6,'BK-A100',11111,'1203112231','2025-05-01',100,NULL),
+(7,'BK-A100',11111,'1203112231','2025-05-15',25,NULL); -- No parts used in this job
 
 -- USES
 -- Illustrates 1-to-many and many-to-many relationships.
