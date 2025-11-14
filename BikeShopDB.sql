@@ -75,12 +75,10 @@ CREATE TABLE RepairJobs (
     PRIMARY KEY (repair_ID),
 
     FOREIGN KEY (customerCPR) 
-        REFERENCES Customer(customerCPR)
-        ON DELETE RESTRICT,          -- dont delete a customer thats referenced in repairjobs.
+        REFERENCES Customer(customerCPR),
     
     FOREIGN KEY (bike_code, bike_manufacturer)
         REFERENCES Bikes(bike_code, manufacturer_ID)
-        ON DELETE RESTRICT -- dont delete a bike thats referenced in repairjobs.
 );
 
 CREATE TABLE Uses (
