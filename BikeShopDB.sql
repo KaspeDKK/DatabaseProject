@@ -63,14 +63,14 @@ CREATE TABLE Parts (
 
 CREATE TABLE RepairJobs (
 
-    repair_ID           INT,            -- Unique ID with the same complexity as manufacturers ID. Each repair job is uniquely identified by a manually assigned repair_ID. It is a surrogate key because no natural key (e.g., date + customer + bike) can guarantee uniqueness as a customer may bring in two bikes of the same exact variant on the same date. We avoid AUTO_INCREMENT in line with project policy and assume repair IDs are generated systematically by the business (e.g., “R001”, “R002”, …)
-    bike_code           VARCHAR(10),    -- fk
-    bike_manufacturer   INT,            -- fk
-    customerCPR         CHAR(10),       -- fk
+    repair_ID           INT,                        -- Unique ID with the same complexity as manufacturers ID. Each repair job is uniquely identified by a manually assigned repair_ID. It is a surrogate key because no natural key (e.g., date + customer + bike) can guarantee uniqueness as a customer may bring in two bikes of the same exact variant on the same date. We avoid AUTO_INCREMENT in line with project policy and assume repair IDs are generated systematically by the business (e.g., “R001”, “R002”, …)
+    bike_code           VARCHAR(10) NOT NULL,       -- fk and not primary key so must be not null
+    bike_manufacturer   INT NOT NULL,               -- fk and not primary key so must be not null
+    customerCPR         CHAR(10) NOT NULL,          -- fk and not primary key so must be not null
     repair_date         DATE,
-    duration            INT,            -- duration in minutes, since time would be a bit more complex to handle, we could also use decimal but then 1 hour 30 minutes would be 1.5. We may as well input 90 minutes
+    duration            INT,                        -- duration in minutes, since time would be a bit more complex to handle, we could also use decimal but then 1 hour 30 minutes would be 1.5. We may as well input 90 minutes
     
-    total_cost DECIMAL(8,2),    -- we will calculate this later as its a derived attribute. Will be null until computed
+    total_cost DECIMAL(8,2),                        -- we will calculate this later as its a derived attribute. Will be null until computed
 
     PRIMARY KEY (repair_ID),
 

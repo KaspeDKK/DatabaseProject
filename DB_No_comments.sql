@@ -64,9 +64,9 @@ CREATE TABLE Parts (
 CREATE TABLE RepairJobs (
 
     repair_ID           INT,            
-    bike_code           VARCHAR(10),    
-    bike_manufacturer   INT,            
-    customerCPR         CHAR(10),       
+    bike_code           VARCHAR(10) NOT NULL,    
+    bike_manufacturer   INT NOT NULL,            
+    customerCPR         CHAR(10) NOT NULL,       
     repair_date         DATE,
     duration            INT,            
     
