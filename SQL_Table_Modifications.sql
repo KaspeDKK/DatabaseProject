@@ -1,6 +1,5 @@
 -- 5. SQL TABLE MODIFICATIONS EXAMPLES --
 
-
 -- 1st. COMMAND: INSERT STATEMENT --
 
 -- Example 1:
